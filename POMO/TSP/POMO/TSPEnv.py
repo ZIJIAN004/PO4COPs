@@ -4,12 +4,12 @@ import torch
 
 from TSProblemDef import get_random_problems, augment_xy_data_by_8_fold
 
-
+#装饰器，表示在初始化中加入一个名为problems的元素，并且命名为一个dataclass的子类reset_state
 @dataclass
 class Reset_State:
     problems: torch.Tensor
     # shape: (batch, problem, 2)
-
+    #存储了问题的坐标，在环境重置的时候返回
 
 @dataclass
 class Step_State:
@@ -21,11 +21,12 @@ class Step_State:
     # shape: (batch, pomo)
     ninf_mask: torch.Tensor = None
     # shape: (batch, pomo, node)
+    #在每一个步进循环中更新
 
 
 class TSPEnv:
     def __init__(self, **env_params):
-
+        # **是把参数打包称为可变长字典加入
         # Const @INIT
         ####################################
         self.env_params = env_params
@@ -51,11 +52,12 @@ class TSPEnv:
         
         # Load from file
         self.validation_set_path = env_params['validation_set_path'] if 'validation_set_path' in env_params else None
+        # 检查是否有手动指定验证集路径
         self.batch_count = 0
         if self.validation_set_path is not None:
             self.loaded_problems = torch.load(self.validation_set_path, map_location='cpu')
         
-
+    #加载问题的方法，内部包含了是否使用8倍数据增强的逻辑
     def load_problems(self, batch_size, problems=None, aug_factor=1):
         self.batch_size = batch_size
 
